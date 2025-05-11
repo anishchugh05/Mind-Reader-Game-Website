@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guess the Number Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+      padding: 50px;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #333;
+    }
+    .message {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    input[type="number"], input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      width: 100%;
+      margin: 10px 0;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #gameArea {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Guess the Number</h1>
+
+    <!-- Name Input Area -->
+    <div id="nameInputArea">
+      <p>Enter your name to begin:</p>
+      <input type="text" id="playerNameInput" placeholder="Your Name" />
+      <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <!-- Game Area -->
+    <div id="gameArea">
+      <p class="message" id="welcomeMessage"></p>
+      <p class="message" id="message">I have selected a number between 1 and 100. Try to guess it!</p>
+      <input type="number" id="userInput" placeholder="Enter a number" />
+      <p id="attempts">Attempts: 0</p>
+      <p id="score">Score: 0</p>
+      <button onclick="startNewRound()">New Round</button>
+    </div>
+  </div>
+
+  <script>
+    let randomNumber;
+    let attempts = 0;
+    let score = 0;
+    let playerName = '';
+
+    function startGame() {
+      playerName = document.getElementById('playerNameInput').value.trim();
+      if (playerName === '') {
+        alert('Please enter your name!');
+        return;
+      }
+
+      document.getElementById('nameInputArea').style.display = 'none';
+      document.getElementById('gameArea').style.display = 'block';
+      document.getElementById('welcomeMessage').textContent = `Welcome, ${playerName}!`;
+      startNewRound();
+    }
+
+    function startNewRound() {
+      randomNumber = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      document.getElementById('message').textContent = 'I have selected a number between 1 and 100. Try to guess it!';
+      document.getElementById('attempts').textContent = 'Attempts: 0';
+      document.getElementById('userInput').value = '';
+    }
+
+    function checkGuess() {
+      const userGuess = parseInt(document.getElementById('userInput').value);
+      if (isNaN(userGuess)) return;
+
+      attempts++;
+      const diff = userGuess - randomNumber;
+      let msg = '';
+
+      if (userGuess === randomNumber) {
+        msg = `🎉 Correct, ${playerName}! You guessed it!`;
+        score++;
+        document.getElementById('score').textContent = 'Score: ' + score;
+      } else if (Math.abs(diff) <= 5) {
+        msg = diff < 0 ? '🔥 You’re close! A bit higher!' : '🔥 You’re close! A bit lower!';
+      } else if (Math.abs(diff) <= 15) {
+        msg = diff < 0 ? '🔼 Higher!' : '🔽 Lower!';
+      } else {
+        msg = diff < 0 ? '⬆️ Way too low!' : '⬇️ Way too high!';
+      }
+
+      document.getElementById('message').textContent = msg;
+      document.getElementById('attempts').textContent = 'Attempts: ' + attempts;
+
+      // If correct, disable input temporarily
+      if (userGuess === randomNumber) {
+        setTimeout(startNewRound, 1500);
+      }
+    }
+
+    // Trigger guess on Enter
+    document.getElementById('userInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        checkGuess();
+      }
+    });
+  </script>
+</body>
+</html>
